@@ -1,0 +1,36 @@
+{
+  "name": "near-election-dapp-frontend",
+  "version": "1.0.0",
+  "license": "(MIT AND Apache-2.0)",
+  "scripts": {
+    "start": "cd frontend && npm run start",
+    "dev-deploy": "npm run build:contract && cd contract && near dev-deploy --wasmFile ./target/wasm32-unknown-unknown/release/near_election_dapp_contract.wasm --accountId $NFT_CONTRACT_ID",
+    "deploy": "npm run build:contract && cd contract && near deploy --wasmFile ./target/wasm32-unknown-unknown/release/near_election_dapp_contract.wasm --accountId $NFT_CONTRACT_ID",
+    "build": "npm run build:contract && npm run build:web",
+    "build:web": "cd frontend && npm run build",
+    "build:contract": "cd contract && rustup target add wasm32-unknown-unknown && cargo build --all --target wasm32-unknown-unknown --release",
+    "call:new_default_meta": "near call $NFT_CONTRACT_ID new_default_meta '{\"owner_id\": \"'$NFT_CONTRACT_ID'\"}' --accountId $NFT_CONTRACT_ID",
+    "call:nft_mint1": "near call $NFT_CONTRACT_ID nft_mint '{\"metadata\": {\"title\": \"Vote Ticket\", \"description\": \"First Token\",\"media\":\"https://gateway.pinata.cloud/ipfs/QmUs5K3LwdvbhKA58bH9C6FX5Q7Bhsvvg9GRAhr9aVKLyx\",\"media_CID\":\"QmUs5K3LwdvbhKA58bH9C6FX5Q7Bhsvvg9GRAhr9aVKLyx\",\"token_kind\": \"vote\"}, \"receiver_id\": \"'$NFT_CONTRACT_ID'\"}' --accountId $NFT_CONTRACT_ID --amount 0.1",
+    "call:nft_mint2": "near call $NFT_CONTRACT_ID nft_mint '{\"metadata\": {\"title\": \"Tonny(candidate)\", \"description\": \"Fifth Token\",\"media\":\"https://gateway.pinata.cloud/ipfs/QmTGtuh3c1qaMdiBUnbiF9k2M3Yr4gZn8yixtAQuVvZueW\",\"media_CID\":\"QmTGtuh3c1qaMdiBUnbiF9k2M3Yr4gZn8yixtAQuVvZueW\",\"candidate_name\": \"Tonny\",\"candidate_manifest\": \"Be yourself everyone else is already taken.\", \"token_kind\": \"candidate\"}, \"receiver_id\": \"'$NFT_CONTRACT_ID'\"}' --accountId $NFT_CONTRACT_ID --amount 0.1",
+    "call:nft_mint3": "near call $NFT_CONTRACT_ID nft_mint '{\"metadata\": {\"title\": \"Rob Stark(candidate)\", \"description\": \"Forth Token\", \"media\": \"https://gateway.pinata.cloud/ipfs/QmQaBSeg58JcWkCxzGhqHiy9SSUugH9MtV8UnZQ3siMRYA\", \"media_CID\": \"QmQaBSeg58JcWkCxzGhqHiy9SSUugH9MtV8UnZQ3siMRYA\", \"candidate_name\": \"Rob Stark\", \"candidate_manifest\": \"In three words I can sum up everything I have learned about life it goes on.\", \"token_kind\": \"candidate\"}, \"receiver_id\": \"'$NFT_CONTRACT_ID'\"}' --accountId $NFT_CONTRACT_ID --amount 0.1",
+    "call:nft_mint4": "near call $NFT_CONTRACT_ID nft_mint '{\"metadata\": {\"title\": \"Jenny Lind(candidate)\", \"description\": \"Seventh Token\", \"media\": \"https://gateway.pinata.cloud/ipfs/QmWUzLowW5ErzoezkpdSVZNF5LFgWTtMhiwfAdZU9LhcgF\", \"media_CID\": \"QmWUzLowW5ErzoezkpdSVZNF5LFgWTtMhiwfAdZU9LhcgF\", \"candidate_name\": \"Jenny Lind\", \"candidate_manifest\": \"Be yourself everyone else is already taken.\", \"token_kind\": \"candidate\"}, \"receiver_id\": \"'$NFT_CONTRACT_ID'\"}' --accountId $NFT_CONTRACT_ID --amount 0.1",
+    "call:transfer": "near call $NFT_CONTRACT_ID nft_transfer '{\"receiver_id\": \"shimomiya.testnet\", \"token_id\": 1}' --accountId $NFT_CONTRACT_ID --depositYocto 1",
+    "call:nft_return_candidate_likes0": "near call $NFT_CONTRACT_ID nft_return_candidate_likes '{\"token_id\": 0}' --accountId $NFT_CONTRACT_ID",
+    "call:nft_add_likes_to_candidate0": "near call $NFT_CONTRACT_ID nft_add_likes_to_candidate '{\"token_id\": 0}' --accountId $NFT_CONTRACT_ID",
+    "call:close_election": "near call $NFT_CONTRACT_ID close_election --accountId $NFT_CONTRACT_ID",
+    "call:reopen_election": "near call $NFT_CONTRACT_ID reopen_election --accountId $NFT_CONTRACT_ID",
+    "view:nft_tokens": "near view $NFT_CONTRACT_ID nft_tokens",
+    "view:if_election_closed": "near view $NFT_CONTRACT_ID if_election_closed",
+    "netlify:login": "netlify login",
+    "netlify:deploy:prod": "netlify deploy --prod -d ./frontend/dist",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "cd contract && cargo test",
+    "test:integration": "npm run build:contract && cd integration-tests && cargo run --example integration-tests \"../contract/target/wasm32-unknown-unknown/release/near_election_dapp_contract.wasm\"",
+    "deps-install": "npm install && cd frontend && npm install && cd .."
+  },
+  "devDependencies": {
+    "near-cli": "^3.3.0",
+    "netlify-cli": "^11.5.1"
+  },
+  "dependencies": {}
+}

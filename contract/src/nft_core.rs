@@ -1,0 +1,46 @@
+use near_sdk::assert_one_yocto;
+
+use crate::*;
+
+pub trait NonFungibleTokenCore {
+    fn nft_token(&self, token_id: TokenId) -> Option<JsonToken>;
+    fn nft_transfer(&mut self, receiver_id: AccountId, token_id: TokenId);
+    fn nft_add_likes_to_candidate(&mut self, token_id: TokenId);
+}
+
+#[near_bindgen]
+impl NonFungibleTokenCore for Contract {
+    // get specified token info
+    fn nft_token(&self, token_id: TokenId) -> Option<JsonToken> {
+        if let Some(token) = self.tokens_by_id.get(&token_id) {
+            let metadata = self.token_metadata_by_id.get(&token_id).unwrap();
+            Some(JsonToken {
+                owner_id: token.owner_id,
+                metadata,
+            })
+        } else {
+            None
+        }
+    }
+
+    #[payable]
+    fn nft_transfer(&mut self, receiver_id: AccountId, token_id: TokenId) {
+        assert!(
+            !(&self.is_election_closed),
+            "You can no longer vote because it's been closed!"
+        );
+
+        assert_one_yocto();
+
+        let sender_id = env::predecessor_account_id();
+        self.internal_transfer(&sender_id, &receiver_id, &token_id);
+    }
+
+    fn nft_add_likes_to_candidate(&mut self, token_id: TokenId) {
+        if self.likes_per_candidate.get(&token_id).is_some() {
+            let mut likes = self.likes_per_candidate.get(&token_id);
+            likes.replace(likes.unwrap() + 1 as Likes);
+            self.likes_per_candidate.insert(&token_id, &likes.unwrap());
+        }
+    }
+}
